@@ -35,3 +35,13 @@ func LoginUserAPI(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
+
+func GetMeAPI(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
+	user, err := us.GetMeHandler(userID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "failed to get user"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}

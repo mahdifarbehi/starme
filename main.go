@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	ac "github.com/mahdifarbehi/starme/auth/controllers"
+	am "github.com/mahdifarbehi/starme/auth/middlewares"
 	"github.com/mahdifarbehi/starme/controllers"
 	"github.com/mahdifarbehi/starme/initializers"
 )
@@ -15,6 +16,7 @@ func init() {
 }
 
 func main() {
+
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
@@ -31,6 +33,12 @@ func main() {
 
 	r.POST("/users", ac.CreateUserAPI)
 	r.POST("/login", ac.LoginUserAPI)
+
+	authorized := r.Group("/")
+	authorized.Use(am.AuthRequired())
+	{
+		authorized.GET("/me", ac.GetMeAPI)
+	}
 
 	if err := r.Run(); err != nil {
 		fmt.Println("Failed to start the server")
